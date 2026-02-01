@@ -1,0 +1,222 @@
+﻿@model BookShoppingCartMvcUI.Models.ViewModels.Recommendation.RecommendDashboardVM
+
+@{
+    ViewData["Title"] = "Bảng điều khiển hệ thống gợi ý";
+}
+
+<div class="container-fluid mt-4">
+
+    <h2 class="mb-4">📊 Bảng điều khiển hệ thống gợi ý</h2>
+
+    <!-- ================= CONFIG ================= -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-dark text-white">
+            ⚙️ Thống kê hệ thống
+        </div>
+
+        <div class="card-body">
+
+            <!-- ===== ROW 1 ===== -->
+            <div class="row mb-3">
+
+                <!-- Data Statistics -->
+                <div class="col-md-6">
+                    <h5>📈 Thống kê tổng quan</h5>
+                    <table class="table table-bordered table-sm">
+                        <tr><th>Tổng số hành vi</th><td>@Model.Config.DataStatistics.TotalInteractions</td></tr>
+                        <tr><th>Số lượng người dùng</th><td>@Model.Config.DataStatistics.NumUsers</td></tr>
+                        <tr><th>Số lượng sản phẩm</th><td>@Model.Config.DataStatistics.NumItems</td></tr>
+                        <tr><th>Số lượt đánh giá</th><td>@Model.Config.DataStatistics.NumRatings</td></tr>
+                        <tr><th>Số lượt tương tác</th><td>@Model.Config.DataStatistics.NumScores</td></tr>
+                    </table>
+                </div>
+
+                <!-- Rating Weights -->
+                <div class="col-md-6">
+                    <h5>⭐ Trọng số theo mức đánh giá</h5>
+                    <table class="table table-bordered table-sm">
+                        <thead>
+                            <tr>
+                                <th>Mức đánh giá</th>
+                                <th>Trọng số</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var r in Model.Config.BehaviorWeights.Rating)
+                            {
+                                <tr>
+                                    <td>@r.Key</td>
+                                    <td>@r.Value</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+            <!-- ===== ROW 2 ===== -->
+            <div class="row">
+
+                <!-- Behavior Weights -->
+                <div class="col-md-6">
+                    <h5>⚖️ Trọng số hành vi người dùng</h5>
+                    <table class="table table-bordered table-sm">
+                        <tr><th>Xem sản phẩm</th><td>@Model.Config.BehaviorWeights.View</td></tr>
+                        <tr><th>Thêm vào giỏ hàng</th><td>@Model.Config.BehaviorWeights.AddToCart</td></tr>
+                        <tr><th>Mua hàng</th><td>@Model.Config.BehaviorWeights.Purchase</td></tr>
+                    </table>
+                </div>
+
+                <!-- User Thresholds -->
+                <div class="col-md-6">
+                    <h5>🎯 Ngưỡng phân loại người dùng</h5>
+                    <table class="table table-bordered table-sm">
+                        <tr><th>Ngưỡng người dùng thấp</th><td>@Model.Config.UserThresholds.NLowMax</td></tr>
+                        <tr><th>Ngưỡng người dùng trung bình</th><td>@Model.Config.UserThresholds.NMediumMax</td></tr>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ================= EVALUATION ================= -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-success text-white">
+            📐 Đánh giá thuật toán gợi ý
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+
+                <!-- ===== LEFT: METRICS TABLE ===== -->
+                <div class="col-md-7">
+                    @if (Model.Evaluation?.Metrics != null && Model.Evaluation.Metrics.Any())
+                    {
+                        <table class="table table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Thuật toán</th>
+                                    <th>Precision@K</th>
+                                    <th>Recall@K</th>
+                                    <th>NDCG@K</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var m in Model.Evaluation.Metrics)
+                                {
+                                    <tr>
+                                        <td>@m.Key</td>
+                                        <td>@m.Value.PrecisionAtK.ToString("0.###")</td>
+                                        <td>@m.Value.RecallAtK.ToString("0.###")</td>
+                                        <td>@m.Value.NdcgAtK.ToString("0.###")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p class="text-muted">Chưa có dữ liệu đánh giá.</p>
+                    }
+                </div>
+
+                <!-- ===== RIGHT: METRICS EXPLANATION ===== -->
+                <div class="col-md-5">
+                    <h6 class="fw-bold mb-2">📘 Giải thích các chỉ số</h6>
+                    <table class="table table-bordered table-sm">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Chỉ số</th>
+                                <th>Ý nghĩa</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Precision@K</strong></td>
+                                <td>
+                                    Tỷ lệ sản phẩm <b>liên quan</b> trong <b>K sản phẩm được gợi ý</b>.
+                                    <br />
+                                    → Đánh giá mức độ <i>chính xác</i> của danh sách gợi ý.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Recall@K</strong></td>
+                                <td>
+                                    Tỷ lệ sản phẩm liên quan được gợi ý trong <b>K</b> so với
+                                    <b>tổng số sản phẩm liên quan</b>.
+                                    <br />
+                                    → Đánh giá mức độ <i>bao phủ</i> của hệ thống.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>NDCG@K</strong></td>
+                                <td>
+                                    Đánh giá <b>chất lượng thứ hạng</b> của danh sách gợi ý.
+                                    <br />
+                                    → Sản phẩm liên quan xuất hiện càng cao thì điểm càng lớn.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= PERSONAL ================= -->
+    <h2 class="mb-3">📊 Gợi ý cá nhân hóa</h2>
+
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            👤 Gợi ý theo từng người dùng
+        </div>
+
+        <div class="card-body">
+
+            <!-- USER SELECT -->
+            <div class="mb-3">
+                <label class="form-label fw-bold">Chọn người dùng</label>
+                <select class="form-select" id="userSelect">
+                    <option value="">-- Chọn người dùng --</option>
+                    @foreach (var u in Model.PersonalPage.Users)
+                    {
+                        <option value="@u.UserId">@u.Label</option>
+                    }
+                </select>
+            </div>
+
+            <!-- RESULT -->
+            <div id="personalResult">
+                <p class="text-muted">
+                    Vui lòng chọn người dùng để xem gợi ý cá nhân hóa.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById("userSelect").addEventListener("change", function () {
+            const userId = this.value;
+            const box = document.getElementById("personalResult");
+
+            if (!userId) {
+                box.innerHTML =
+                    "<p class='text-muted'>Vui lòng chọn người dùng để xem gợi ý cá nhân hóa.</p>";
+                return;
+            }
+
+            fetch(`/RecommendDashboard/GetPersonalResult?userId=${userId}`)
+                .then(r => r.text())
+                .then(html => box.innerHTML = html)
+                .catch(() => {
+                    box.innerHTML =
+                        "<p class='text-danger'>Không thể tải dữ liệu.</p>";
+                });
+        });
+    </script>
+}

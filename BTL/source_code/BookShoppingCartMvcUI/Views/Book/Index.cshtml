@@ -1,0 +1,63 @@
+﻿@model IEnumerable<Book>
+@{
+    Layout = "_AdminLayout";
+    var stt = 1; // Khởi tạo biến đếm
+}
+
+<h2>Books</h2>
+
+<a asp-action="AddBook" asp-controller="Book" class="btn btn-primary">Thêm sách</a>
+
+@if (Model?.Any() == true)
+{
+    <table class="table table-striped my-2">
+        <tr>
+            <th>STT</th>
+            <th>Ảnh</th>
+            <th>Sách</th>
+            <th>Tác giả</th>
+            <th>Thể loại</th>
+            <th>Giá</th>
+            <th>Thao tác</th>
+        </tr>
+
+        @foreach (var book in Model)
+        {
+            <tr>
+                <td>@stt</td> <!-- Hiển thị STT -->
+                <td>
+                    @if (string.IsNullOrWhiteSpace(book.Image))
+                    {
+                        <img src="/Images/NoImage.png" style="width:80px;height:100px" alt="book image" />
+                    }
+                    else
+                    {
+                        <img src="/images/@book.Image" style="width:80px;height:100px" alt="book image" />
+                    }
+                </td>
+                <td>@book.BookName</td>
+                <td>@book.AuthorName</td>
+                <td>@book.Genre.GenreName</td>
+                <td class="text-nowrap">@book.Price.ToString("N0") ₫</td>
+                <td>
+                    <div class="d-flex gap-2">
+                        <a asp-action="UpdateBook" asp-controller="Book" asp-route-id="@book.Id"
+                           class="btn btn-success flex-fill text-center" style="min-width: 80px;">
+                            Sửa
+                        </a>
+                        <a asp-action="DeleteBook" asp-controller="Book" asp-route-id="@book.Id"
+                           class="btn btn-danger flex-fill text-center" style="min-width: 80px;"
+                           onclick="return window.confirm('Are you sure?')">
+                            Xóa
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            stt++; // Tăng biến đếm sau mỗi dòng
+        }
+    </table>
+}
+else
+{
+    <h3>No records</h3>
+}
