@@ -60,3 +60,14 @@ uvicorn main:app --reload
 ```bash
 docker-compose up -d --build
 ```
+
+## Hướng dẫn sử dụng
+
+1. Truy cập vào `http://localhost:5000`
+
+2. Đăng nhập
+
+```bash
+username: admin@gmail.com
+password: Admin@123
+```
