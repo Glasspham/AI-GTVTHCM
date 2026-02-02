@@ -16,6 +16,47 @@ Hoặc bạn có thể dùng docker để chạy dự án này
 ## Hướng dẫn cài đặt
 
 1. Clone repository này
-2. Cài đặt các package trong file requirements.txt
-3. Cài đặt các package trong file .csproj
-4. Chạy dự án
+
+```bash
+git clone https://github.com/Glasspham/AI-GTVTHCM.git
+```
+
+2. Cd vào thư mục `Bài tập lớn`
+
+```bash
+cd BTL/source_code
+```
+
+#### Chạy bằng local
+
+3. Cài đặt các package trong file requirements.txt
+
+```bash
+pip install -r requirements.txt
+```
+
+4. Cài đặt các package trong file .csproj
+
+```bash
+dotnet restore
+```
+
+5. Chạy dự án
+
+```bash
+dotnet run
+```
+
+6. Chạy server python
+
+```bash
+uvicorn main:app --reload
+```
+
+#### Chạy bằng docker
+
+3. Chạy dự án bằng docker
+
+```bash
+docker-compose up -d --build
+```
