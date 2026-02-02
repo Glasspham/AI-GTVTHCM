@@ -181,40 +181,40 @@ public class DbSeeder
             // 🛠️ 3. Create Stored Procedures
             // USP for Top Selling Books All Time
             await context.Database.ExecuteSqlRawAsync(@"
-                IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Usp_GetTopNSellingBooksAllTime]') AND type in (N'P', N'PC'))
+                IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Usp_GetTopNSellingBooksAllTime]') AND type in (N'P', N'PC'))
+                    DROP PROCEDURE [dbo].[Usp_GetTopNSellingBooksAllTime];
+                
+                EXEC('CREATE PROCEDURE [dbo].[Usp_GetTopNSellingBooksAllTime]
+                AS
                 BEGIN
-                    EXEC('CREATE PROCEDURE [dbo].[Usp_GetTopNSellingBooksAllTime]
-                    AS
-                    BEGIN
-                        SET NOCOUNT ON;
-                        SELECT TOP 5 b.Id as BookId, b.BookName, b.AuthorName, b.Image, ISNULL(SUM(od.Quantity), 0) as TotalUnitSold
-                        FROM Book b
-                        LEFT JOIN OrderDetail od ON b.Id = od.BookId
-                        LEFT JOIN [Order] o ON o.Id = od.OrderId
-                        GROUP BY b.Id, b.BookName, b.AuthorName, b.Image
-                        ORDER BY TotalUnitSold DESC
-                    END')
-                END");
+                    SET NOCOUNT ON;
+                    SELECT TOP 5 b.Id as BookId, b.BookName, b.AuthorName, b.Image, CAST(ISNULL(SUM(od.Quantity), 0) AS INT) as TotalUnitSold
+                    FROM Book b
+                    LEFT JOIN OrderDetail od ON b.Id = od.BookId
+                    LEFT JOIN [Order] o ON o.Id = od.OrderId
+                    GROUP BY b.Id, b.BookName, b.AuthorName, b.Image
+                    ORDER BY TotalUnitSold DESC
+                END')");
 
             // USP for Top Selling Books By Date
             await context.Database.ExecuteSqlRawAsync(@"
-                IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Usp_GetTopNSellingBooksByDate]') AND type in (N'P', N'PC'))
+                IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Usp_GetTopNSellingBooksByDate]') AND type in (N'P', N'PC'))
+                    DROP PROCEDURE [dbo].[Usp_GetTopNSellingBooksByDate];
+
+                EXEC('CREATE PROCEDURE [dbo].[Usp_GetTopNSellingBooksByDate]
+                    @startDate datetime,
+                    @endDate datetime
+                AS
                 BEGIN
-                    EXEC('CREATE PROCEDURE [dbo].[Usp_GetTopNSellingBooksByDate]
-                        @startDate datetime,
-                        @endDate datetime
-                    AS
-                    BEGIN
-                        SET NOCOUNT ON;
-                        SELECT TOP 5 b.Id as BookId, b.BookName, b.AuthorName, b.Image, ISNULL(SUM(od.Quantity), 0) as TotalUnitSold
-                        FROM Book b
-                        LEFT JOIN OrderDetail od ON b.Id = od.BookId
-                        LEFT JOIN [Order] o ON o.Id = od.OrderId
-                        WHERE o.CreateDate >= @startDate AND o.CreateDate <= @endDate
-                        GROUP BY b.Id, b.BookName, b.AuthorName, b.Image
-                        ORDER BY TotalUnitSold DESC
-                    END')
-                END");
+                    SET NOCOUNT ON;
+                    SELECT TOP 5 b.Id as BookId, b.BookName, b.AuthorName, b.Image, CAST(ISNULL(SUM(od.Quantity), 0) AS INT) as TotalUnitSold
+                    FROM Book b
+                    LEFT JOIN OrderDetail od ON b.Id = od.BookId
+                    LEFT JOIN [Order] o ON o.Id = od.OrderId
+                    WHERE o.CreateDate >= @startDate AND o.CreateDate <= @endDate
+                    GROUP BY b.Id, b.BookName, b.AuthorName, b.Image
+                    ORDER BY TotalUnitSold DESC
+                END')");
         }
         catch (Exception ex)
         {
