@@ -11,12 +11,12 @@ port = "1433"
 
 # ===== Chuỗi kết nối =====
 connection_string = (
-    f"DRIVER={{ODBC Driver 17 for SQL Server}};"
-    f"SERVER={server},{port};"
+    f"DRIVER={{SQL Server}};"
+    f"SERVER={server};"
     f"DATABASE={database};"
     f"UID={username};"
     f"PWD={password};"
-    "TrustServerCertificate=yes;"
+    "Trusted_Connection=yes;"
 )
 
 def get_connection():

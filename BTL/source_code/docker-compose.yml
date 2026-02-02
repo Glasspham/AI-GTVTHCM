@@ -10,6 +10,8 @@ services:
       - SA_PASSWORD=Password123!
       - MSSQL_PID=Developer
     user: root
+    volumes:
+      - mvc_sql_data:/var/opt/mssql
 
   api:
     build:
@@ -20,8 +22,6 @@ services:
       - "8000:8000"
     depends_on:
       - sqlserver
-    environment:
-      - DB_SERVER=sqlserver
 
   web:
     build:
@@ -35,8 +35,12 @@ services:
       - api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      # Ghi đè connection string của appsettings.json bằng môi trường Docker
       - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=BookShoppingCartMvcMau;User Id=sa;Password=Password123!;TrustServerCertificate=true;
 
 networks:
   default:
     name: mvc_network
+
+volumes:
+  mvc_sql_data:

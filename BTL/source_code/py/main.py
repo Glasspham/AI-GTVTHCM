@@ -129,11 +129,7 @@ load_interactions()
 print(">>> BOOK_MAP SIZE:", len(load_data.BOOK_MAP))
 
 manager = ModelManager()
-try:
-    manager.reload_if_needed()
-except Exception as e:
-    print(f"⚠️ Warning: Could not load initial model: {e}")
-    print("Ensure database is running and contains required tables.")
+manager.reload_if_needed()
 
 app = FastAPI(title="Recommendation API")
 
